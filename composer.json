@@ -1,0 +1,12 @@
+{
+  "name": "ifxpayments/framework-agnostic",
+  "require": {
+    "php": "^8.4"
+  },
+  "scripts": {
+    "post-install-cmd": [
+    ],
+    "post-update-cmd": [
+    ]
+  }
+}
