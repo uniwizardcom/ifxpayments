@@ -9,32 +9,65 @@ declare(strict_types=1);
 namespace Source\Service\Operation;
 
 use Source\Service\Rule\RuleInterface;
+use Source\Model\Bank;
 
 class GeneralAbstract
 {
+    public function __construct(
+        private readonly Bank\Account $account,
+        private readonly Bank\Value $value
+    ) {}
+
+    /**
+     * @throws FailsExcepion
+     */
+    public function execute(): bool
+    {
+        $this->checkRules();
+
+        return true;
+    }
+
     /**
      * @var RuleInterface[]
      */
     private array $rules = [];
 
-    /**
-     * @var string[]
-     */
-    private array $ruleFails = [];
+    private ?FailsExcepion $failException = null;
 
     public function addRoule(RuleInterface $rule): void
     {
+        $rule->setAccount($this->account);
+        $rule->setValue($this->value);
+
         $this->rules[] = $rule;
     }
 
-    private function canAfterCheckRules(): bool
+    /**
+     * @throws FailsExcepion
+     */
+    protected function checkRules(): void
     {
+        $this->failException = null;
         foreach($this->rules as $rule) {
             if(!$rule->check()) {
-                $this->ruleFails[] = $rule->getFailMessage();
+                if(!$this->failException) {
+                    $this->failException = new FailsExcepion();
+                }
+                $this->failException->addFailedRule($rule);
             }
         }
 
-        return empty($this->ruleFails);
+        if($this->failException) {
+            throw $this->failException;
+        }
+    }
+
+    /**
+     * @return FailsExcepion|null
+     */
+    public function getFailException(): ?FailsExcepion
+    {
+        return $this->failException;
     }
 }

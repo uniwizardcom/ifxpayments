@@ -57,10 +57,20 @@ class TestProccessCredit
             account: $this->bankAccount,
             value: $value
         );
-        $proccessCredit->addRoule(new Bank\Rule());
-        $proccessCredit->addRoule(new Bank\Rule());
-        $proccessCredit->addRoule(new Bank\Rule());
-        $proccessCredit->addRoule(new Bank\Rule());
+        $proccessCredit->addRoule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
+            $rule->setName('Waluty');
+            $rule->setMessage('Waluty się nie zgadzają');
+            return !$bankAccount->getCurrency()->isEqual(
+                $bankAccount->getClient()->getCurrency()
+            );
+        }));
+        $proccessCredit->addRoule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
+            $rule->setName('Kwota');
+            $rule->setMessage('Kwota musi być większa od zera');
+            return $value->getValueRaw() === 0;
+        }));
+//        $proccessCredit->addRoule(new Bank\Rule());
+//        $proccessCredit->addRoule(new Bank\Rule());
 
         return $proccessCredit->execute();
     }

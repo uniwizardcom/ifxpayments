@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Source\Kernel;
 
+use Source\Service\ArrayExceptions;
+
 class TestFiles extends KernelAbstract
 {
     public function getFilterPatern(): string
@@ -33,6 +35,11 @@ class TestFiles extends KernelAbstract
                 $failMessage = null;
                 try {
                     $res = $testObject->{$testMethods}();
+                } catch (ArrayExceptions $e) {
+                    $failMessage .= $e->getMessage();
+                    foreach ($e->iterate() as $key => $item) {
+                        $failMessage .= $key.') '.$item . PHP_EOL . '      ';
+                    }
                 } catch (\Throwable $e) {
                     $failMessage = $e->getMessage();
                 }
@@ -42,7 +49,7 @@ class TestFiles extends KernelAbstract
                 } else {
                     echo ' Failed';
                     if($failMessage !== null) {
-                        echo ' with message: '.PHP_EOL.'      '.$failMessage;
+                        echo ' with message: '.PHP_EOL.'      '.trim($failMessage);
                     }
 
                 }
