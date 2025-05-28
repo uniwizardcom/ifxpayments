@@ -1,7 +1,15 @@
 {
   "name": "ifxpayments/framework-agnostic",
+  "type": "project",
+  "prefer-stable": true,
+  "minimum-stability": "stable",
   "require": {
     "php": "^8.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Source\\": "src/"
+    }
   },
   "scripts": {
     "post-install-cmd": [
