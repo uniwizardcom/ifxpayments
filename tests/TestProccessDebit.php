@@ -49,7 +49,8 @@ class TestProccessDebit
             client: $this->clientAccount
         );
 
-        $this->bankAccount->getBalance()->addition(new Value(500000));
+        $this->bankAccount->getBalance()->addition(new Value(50000000));
+        echo sprintf('Balance 0: %.2f', $this->bankAccount->getBalance()->getValueAsFloat()).PHP_EOL;
     }
 
     /**
@@ -58,7 +59,7 @@ class TestProccessDebit
     public function TestBankAccountDebitCurrency(): bool
     {
         $value = new Bank\Value();
-        $value->setValueAsFloat(2150.35);
+        $value->setValueAsFloat(49.65);
 
         $proccessDebit = new ProccessDebit(
             account: $this->bankAccount,
@@ -71,8 +72,10 @@ class TestProccessDebit
                 $bankAccount->getClient()->getCurrency()
             );
         }));
+        $status = $proccessDebit->execute();
+        echo PHP_EOL.sprintf('Balance 1: %.2f', $this->bankAccount->getBalance()->getValueAsFloat());
 
-        return $proccessDebit->execute();
+        return $status;
     }
 
     /**
@@ -82,8 +85,6 @@ class TestProccessDebit
     {
         $value = new Bank\Value();
         $value->setValueAsFloat(2150.35);
-
-        echo PHP_EOL.sprintf('Balance 1: %.2f', $this->bankAccount->getBalance()->getValueAsFloat());
 
         $proccessDebit = new ProccessDebit(
             account: $this->bankAccount,
@@ -102,7 +103,6 @@ class TestProccessDebit
         $status = $proccessDebit->execute();
 
         echo PHP_EOL.sprintf('Balance 2: %.2f', $this->bankAccount->getBalance()->getValueAsFloat());
-        echo PHP_EOL;
 
         return $status;
     }
