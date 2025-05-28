@@ -6,13 +6,12 @@
  */
 declare(strict_types=1);
 
-namespace Source\Service\Credit;
+namespace Source\Proccess\Debit;
 
 use Source\Model\Bank;
 use Source\Service\Operation\GeneralAbstract;
-use Source\Service\Rule\RuleInterface;
 
-class Credit extends GeneralAbstract
+class Debit extends GeneralAbstract
 {
     public function __construct(
         private Bank\Account $account,
@@ -21,6 +20,6 @@ class Credit extends GeneralAbstract
 
     public function execute(): bool
     {
-
+        return true;
     }
 }

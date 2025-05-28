@@ -8,7 +8,19 @@ declare(strict_types=1);
 
 namespace Source\Model\Bank;
 
-class Rule
+use Source\Service\Rule\RuleInterface;
+
+class Rule implements RuleInterface
 {
     public function __construct() {}
+
+    public function check(): bool
+    {
+        return true;
+    }
+
+    public function getFailMessage(): string
+    {
+        return '';
+    }
 }

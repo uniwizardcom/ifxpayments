@@ -31,7 +31,7 @@ class GeneralAbstract
     {
         foreach($this->rules as $rule) {
             if(!$rule->check()) {
-                $this->ruleFails[] = $rule->getFail();
+                $this->ruleFails[] = $rule->getFailMessage();
             }
         }
 
