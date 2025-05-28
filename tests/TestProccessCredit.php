@@ -48,7 +48,7 @@ class TestProccessCredit
         );
     }
 
-    public function TestBankAccountCreditValue(): bool
+    public function TestBankAccountCreditCurrency(): bool
     {
         $value = new Bank\Value();
         $value->setValueAsFloat(2150.35);
@@ -64,13 +64,24 @@ class TestProccessCredit
                 $bankAccount->getClient()->getCurrency()
             );
         }));
+
+        return $proccessCredit->execute();
+    }
+
+    public function TestBankAccountCreditValue(): bool
+    {
+        $value = new Bank\Value();
+        $value->setValueAsFloat(2150.35);
+
+        $proccessCredit = new ProccessCredit(
+            account: $this->bankAccount,
+            value: $value
+        );
         $proccessCredit->addRoule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
             $rule->setName('Kwota');
             $rule->setMessage('Kwota musi być większa od zera');
             return $value->getValueRaw() > 0;
         }));
-//        $proccessCredit->addRoule(new Bank\Rule());
-//        $proccessCredit->addRoule(new Bank\Rule());
 
         return $proccessCredit->execute();
     }
