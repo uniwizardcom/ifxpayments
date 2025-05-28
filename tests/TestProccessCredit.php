@@ -12,6 +12,7 @@ use Source\Model\User;
 use Source\Model\Client;
 use Source\Model\Bank;
 use Source\Proccess\Credit\Credit as ProccessCredit;
+use Source\Service\Operation\FailsExcepion;
 
 class TestProccessCredit
 {
@@ -48,6 +49,9 @@ class TestProccessCredit
         );
     }
 
+    /**
+     * @throws FailsExcepion
+     */
     public function TestBankAccountCreditCurrency(): bool
     {
         $value = new Bank\Value();
@@ -68,6 +72,9 @@ class TestProccessCredit
         return $proccessCredit->execute();
     }
 
+    /**
+     * @throws FailsExcepion
+     */
     public function TestBankAccountCreditValue(): bool
     {
         $value = new Bank\Value();
