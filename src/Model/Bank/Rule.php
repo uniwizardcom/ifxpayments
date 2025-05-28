@@ -11,6 +11,9 @@ namespace Source\Model\Bank;
 use Closure;
 use Source\Service\Rule\RuleInterface;
 
+/**
+ * Klasa warunku finalizowania - wykonania operacji na Value, która wcześniej została wyliczona jako symulacja
+ */
 class Rule implements RuleInterface
 {
     private $name;

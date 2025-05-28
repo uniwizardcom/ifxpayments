@@ -8,13 +8,14 @@ declare(strict_types=1);
 
 namespace Test;
 
+use Source\Model\Bank\Value;
 use Source\Model\User;
 use Source\Model\Client;
 use Source\Model\Bank;
-use Source\Proccess\Credit\Credit as ProccessCredit;
+use Source\Proccess\Debit\Debit as ProccessDebit;
 use Source\Service\Operation\FailsExcepion;
 
-class TestProccessCredit
+class TestProccessDebit
 {
     private Bank\Currency $bankCurrency;
     private Client\Currency $clientCurrency;
@@ -47,21 +48,23 @@ class TestProccessCredit
             currency: $this->bankCurrency,
             client: $this->clientAccount
         );
+
+        $this->bankAccount->getBalance()->addition(new Value(500000));
     }
 
     /**
      * @throws FailsExcepion
      */
-    public function TestBankAccountCreditCurrency(): bool
+    public function TestBankAccountDebitCurrency(): bool
     {
         $value = new Bank\Value();
         $value->setValueAsFloat(2150.35);
 
-        $proccessCredit = new ProccessCredit(
+        $proccessDebit = new ProccessDebit(
             account: $this->bankAccount,
             value: $value
         );
-        $proccessCredit->addRule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
+        $proccessDebit->addRule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
             $rule->setName('Waluty');
             $rule->setMessage('Waluty się nie zgadzają');
             return $bankAccount->getCurrency()->isEqual(
@@ -69,28 +72,7 @@ class TestProccessCredit
             );
         }));
 
-        return $proccessCredit->execute();
-    }
-
-    /**
-     * @throws FailsExcepion
-     */
-    public function TestBankAccountCreditValue(): bool
-    {
-        $value = new Bank\Value();
-        $value->setValueAsFloat(2150.35);
-
-        $proccessCredit = new ProccessCredit(
-            account: $this->bankAccount,
-            value: $value
-        );
-        $proccessCredit->addRule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
-            $rule->setName('Kwota');
-            $rule->setMessage('Kwota musi być większa od zera');
-            return $value->getValueRaw() > 0;
-        }));
-
-        return $proccessCredit->execute();
+        return $proccessDebit->execute();
     }
 
     /**
@@ -101,16 +83,27 @@ class TestProccessCredit
         $value = new Bank\Value();
         $value->setValueAsFloat(2150.35);
 
-        $proccessCredit = new ProccessCredit(
+        echo PHP_EOL.sprintf('Balance 1: %.2f', $this->bankAccount->getBalance()->getValueAsFloat());
+
+        $proccessDebit = new ProccessDebit(
             account: $this->bankAccount,
             value: $value
         );
-        $proccessCredit->addRule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
+        $proccessDebit->addRule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
             $rule->setName('Kwota');
             $rule->setMessage('Kwota musi być większa od zera');
             return $value->getValueRaw() > 0;
         }));
+        $proccessDebit->addRule(new Bank\Rule(function(Bank\Rule $rule, Bank\Account $bankAccount, Bank\Value $value) {
+            $rule->setName('Prowizja 5%');
+            $rule->setMessage('Kwota + Prowizja 5% musi być większa od balansu na koncie po operacji');
+            return $value->getValueRaw() > 0;
+        }));
+        $status = $proccessDebit->execute();
 
-        return $proccessCredit->execute();
+        echo PHP_EOL.sprintf('Balance 2: %.2f', $this->bankAccount->getBalance()->getValueAsFloat());
+        echo PHP_EOL;
+
+        return $status;
     }
 }

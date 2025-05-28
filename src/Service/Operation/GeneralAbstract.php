@@ -11,23 +11,8 @@ namespace Source\Service\Operation;
 use Source\Service\Rule\RuleInterface;
 use Source\Model\Bank;
 
-class GeneralAbstract
+abstract class GeneralAbstract
 {
-    public function __construct(
-        private readonly Bank\Account $account,
-        private readonly Bank\Value $value
-    ) {}
-
-    /**
-     * @throws FailsExcepion
-     */
-    public function execute(): bool
-    {
-        $this->checkRules();
-
-        return true;
-    }
-
     /**
      * @var RuleInterface[]
      */
@@ -35,7 +20,35 @@ class GeneralAbstract
 
     private ?FailsExcepion $failException = null;
 
-    public function addRoule(RuleInterface $rule): void
+    public function __construct(
+        private readonly Bank\Account $account,
+        private readonly Bank\Value $value
+    ) {}
+
+    public function getValue(): Bank\Value
+    {
+        return $this->value;
+    }
+
+    public function getAccount(): Bank\Account
+    {
+        return $this->account;
+    }
+
+    abstract public function try(): void;
+
+    /**
+     * @throws FailsExcepion
+     */
+    public function execute(): bool
+    {
+        $this->checkRules();
+        $this->try();
+
+        return true;
+    }
+
+    public function addRule(RuleInterface $rule): void
     {
         $rule->setAccount($this->account);
         $rule->setValue($this->value);

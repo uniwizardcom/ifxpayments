@@ -19,7 +19,9 @@ readonly class Account
         private string $number,
         private CurrencyBankInterface $currency,
         private Client\Account $client,
-    ) {}
+    ) {
+        $this->balance = new Value();
+    }
 
     public  function getNumber(): string
     {
