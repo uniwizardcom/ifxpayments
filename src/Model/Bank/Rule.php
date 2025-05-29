@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Source\Model\Bank;
 
-use Closure;
 use Source\Service\Rule\RuleInterface;
 
 /**
@@ -16,13 +15,13 @@ use Source\Service\Rule\RuleInterface;
  */
 class Rule implements RuleInterface
 {
-    private $name;
+    private string $name;
     private ?string $message = null;
     private Account $account;
     private Value $value;
 
     public function __construct(
-        private readonly Closure $func
+        private readonly \Closure $func
     ) {}
 
     public function check(): bool

@@ -14,6 +14,8 @@ class Value
 {
     private const int MULTIPLIER = 10000;
 
+    private int $valueOriginal = 0;
+
     /**
      * $value reprezentuje wartość kwoty typu float z 4-ma zerami - aby zminimalizować wpływ problemu operacji zmiennoprzecinkowych
      * przykład wartość 21.33 to 213300
@@ -21,7 +23,9 @@ class Value
      */
     public function __construct(
         private int $value = 0
-    ) {}
+    ) {
+        $this->valueOriginal = $value;
+    }
 
     public  function getValueRaw(): int
     {
@@ -30,7 +34,7 @@ class Value
 
     public function setValueAsFloat(float $value): void
     {
-        $this->value = (int)($value * self::MULTIPLIER);
+        $this->valueOriginal = $this->value = (int)($value * self::MULTIPLIER);
     }
 
     public function getValueAsFloat(): float
@@ -64,5 +68,15 @@ class Value
         $this->value = (int)($this->value / $value->value);
 
         return $this;
+    }
+
+    public function finalize(): void
+    {
+        $this->valueOriginal = $this->value;
+    }
+
+    public function revoke(): void
+    {
+        $this->value = $this->valueOriginal;
     }
 }

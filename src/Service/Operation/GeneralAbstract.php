@@ -11,7 +11,7 @@ namespace Source\Service\Operation;
 use Source\Service\Rule\RuleInterface;
 use Source\Model\Bank;
 
-abstract class GeneralAbstract
+abstract class GeneralAbstract implements OperationInterface
 {
     /**
      * @var RuleInterface[]
@@ -23,7 +23,9 @@ abstract class GeneralAbstract
     public function __construct(
         private readonly Bank\Account $account,
         private readonly Bank\Value $value
-    ) {}
+    ) {
+        $this->account->setOperation($this);
+    }
 
     public function getValue(): Bank\Value
     {
@@ -35,15 +37,23 @@ abstract class GeneralAbstract
         return $this->account;
     }
 
-    abstract public function try(): void;
+    abstract public function calculate(): void;
 
     /**
      * @throws FailsExcepion
      */
     public function execute(): bool
     {
-        $this->checkRules();
-        $this->try();
+        try {
+            $this->operate();
+            $this->checkRules();
+        } catch (FailsExcepion $failsExcepion) {
+            $this->getAccount()->revoke();
+            throw $failsExcepion;
+        }
+
+        $this->calculate();
+        $this->getAccount()->finalize();
 
         return true;
     }
@@ -54,6 +64,13 @@ abstract class GeneralAbstract
         $rule->setValue($this->value);
 
         $this->rules[] = $rule;
+    }
+
+    protected function operate(): void
+    {
+        foreach ($this->getAccount()->getOperators() as $operator) {
+            $operator->operate();
+        }
     }
 
     /**

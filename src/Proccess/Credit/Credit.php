@@ -12,7 +12,7 @@ use Source\Service\Operation\GeneralAbstract;
 
 class Credit extends GeneralAbstract
 {
-    public function try(): void
+    public function calculate(): void
     {
         $this->getAccount()->getBalance()->addition(
             $this->getValue()
